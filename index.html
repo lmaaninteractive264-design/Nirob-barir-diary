@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>Nirob barir diary-Diary of the Silent House</title>
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="Play Diary of the silent house - Nirob Barir Diary, a chilling interactive horror story set in a mysterious house. Uncover the secrets of the silent diary. (Bilingual: Bengali & English)">
+<meta name="keywords" content="Nirob Barir Diary, Silent House Diary, Horror Game Bangladesh, Interactive Story, Arafat Islam Arko">
+<meta name="author" content="Arafat Islam Arko">
+
+  <style>
+  html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+#gameWrapper {
+  width: 100vw;
+  height: 100vh;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Actual game area */
+#gameContainer {
+  width: 800px;
+  height: 450px;
+  max-width: 100%;
+  max-height: 100%;
+  background: #000;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Mobile auto scale */
+@media (max-width: 800px) {
+  #gameContainer {
+    width: 100vw;
+    height: calc(100vw * 9 / 16);
+  }
+}
+  
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: #fff;
+      text-align: center;
+    }
+
+    .center {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    img {
+      max-width: 90%;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #b30000;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    button:hover {
+      background: #ff0000;
+    }
+
+    .option {
+      display: block;
+      margin: 8px 0;
+    }
+  #menuBtn {
+  position: fixed;
+  top: 10px;
+  right: 15px;
+  font-size: 26px;
+  cursor: pointer;
+  z-index: 999;
+  user-select: none;
+}
+
+#menuBox {
+  position: fixed;
+  top: 45px;
+  right: 15px;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 5px;
+  display: none;
+  z-index: 999;
+}
+
+#menuBox p {
+  margin: 0;
+  padding: 10px 15px;
+  cursor: pointer;
+}
+
+#menuBox p:hover {
+  background: #222;
+}
+  .quiz-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-size: 18px;
+  z-index: 9999;
+  display: none;
+  text-align: center;
+}
+  </style>
+</head>
+<body>
+  <audio id="bgMusic" loop>
+  <source src="bg.mp3" type="audio/mpeg">
+</audio>
+<!-- Three Dot Menu -->
+<div id="menuBtn">⋮</div>
+
+<div id="menuBox">
+  <p onclick="openAbout()">About</p>
+  <p onclick="openPrivacy()">Privacy Policy</p>
+</div>
+  
+<!-- ===== START SCREEN ===== -->
+<div id="startScreen" class="center">
+  <img src="https://i.supaimg.com/9eeddbc7-303c-471f-9ba2-23c087e638c7.jpg"alt="Game Logo" style="max-width:200px;">
+  <p style="opacity:0.7;">Created by Imaan Interactive</p>
+  <button onclick="startGame()">Start Game</button>
+</div>
+
+<!-- ===== GAME SCREEN ===== -->
+<div id="gameScreen" class="center" style="display:none;">
+  <img id="sceneImage" src="">
+  <p id="sceneText"></p>
+
+  <div id="quizBox" style="display:none;"></div>
+
+  <button id="nextBtn">Next</button>
+</div>
+
+<!-- ===== ENDING SCREEN ===== -->
+<div id="endingScreen" class="center" style="display:none;">
+  <h2 id="endingTitle">The End</h2>
+  <p id="endingText"></p>
+
+  <hr style="width:60%; opacity:0.3;">
+
+  <p style="font-size:14px; opacity:0.7;">
+    Created by <b>Imaan Interactive</b><br>
+    Story & Game Design<br>Arafat islam arko<br>
+    Thank you for playing
+  </p>
+
+  <p style="margin-top:20px; opacity:0.6;">
+    Season 2 Coming Soon...
+  </p>
+</div>
+
+<script>
+  
+  const scenes = [
+    {
+      img: "https://i.ibb.co.com/CKD2LrZ2/Serene-village-life-by-the-pond.png",
+      text: "বাংলাদেশে অবস্থিত একটি প্রত্যন্ত গ্রাম। (A remote village in Bangladesh)"
+    },
+    {
+      img: "https://i.ibb.co.com/JR4jK2Tv/Foggy-village-at-night.png",
+      text: "সেই গ্রামে একটি পুরোন বাড়ী ছিল। যেটায় কোন মানুষ থাকতো না। অনেকে বলতো সেই বাড়ীতে অদ্ভুত কিছু আছে। (There was an old house in that village where no one lived. People said there was something strange about it.)"
+    },
+  {
+    img: "https://i.ibb.co.com/99fHTNd0/Rustic-night-at-an-old-hut.png",
+    text: "এক দিন হঠাৎ এক ব্যক্তি আসে সেই বাড়ীতে থাকতে। তখন সেই ব্যক্তি দরজা খুলতে যাবে তখন সে কিছু একটার শব্দ পায়। (One day, a man came to stay in that house. As he was about to open the door, he heard a sound.)"
+  },
+    {
+      quiz: true,
+      question: "এই বাড়িতে ঢোকার আগে কী পড়া উচিত? (What should you do before entering this house?)",
+      options: ["দোয়া (prayer)", "গান (song)", "চিৎকার (scream)"],
+      correct: 0
+    },
+    {
+      img: "https://i.ibb.co.com/mVB9Vf2L/Gripping-the-past-through-rusty-door.png",
+      text: "দরজা খুলতেই ঠাণ্ডা হাওয়া বয়ে গেল… (As the door opened, a cold breeze swept through...)"
+    },
+  {
+    img:"https://i.ibb.co.com/7D2C6MK/Lucid-Origin-Interior-of-a-dimly-lit-abandoned-Bangladeshi-hou-2.jpg",
+    text:"লোকটি দরজা খুলতেই ভিতরে ভাঙা আসবাবপত্র দেখতে পেল... (When the man opened the door, he saw broken furniture inside...)"
+  },
+  {
+    img:"https://i.ibb.co.com/nN8RshQk/Lucid-Origin-Old-worn-leather-diary-lying-open-on-a-dusty-wood-2.jpg",
+    text:"লোকটি বাড়ির ভিতরে প্রবেশ করে এবং ভিতরে একটি টেবিলের উপর একটি ডায়েরি দেখতে পেল... (The man entered the house and saw a diary on a table...)"
+  },
+  {
+    quiz: true,
+    question:"লোকটি বাড়ির ভিতরে কোথায় ডায়েরি দেখতে পেল? (Where did the man find the diary inside the house?)",
+    options:["বিছানার উপর (on the bed)","টেবিলের উপর (on the table)","শোফার উপর (on the Couch)"],
+    correct:1
+  },
+  {
+    img:"https://i.supaimg.com/f2973029-08b5-4333-8f21-26191f57a707.jpg",
+    text:"সেই ডায়েরিতে লেখা ছিল,আমি মরে যাইনি আমি বেঁচে আছি! ও আমায় যেতে দিচ্ছে না! (The diary said: I am not dead, I am alive! It won't let me go!)"
+  },
+  {
+    img:"https://i.supaimg.com/75010313-acc8-4402-8132-c899fc91f60b.jpg",
+    text:"সেই বাড়িতে থাকা লোকটি হঠাৎ একটা ছায়াঁ দেখতে পেল.... (The man in the house suddenly saw a shadow....)"
+  },
+  {
+    quiz:true,
+    question:"ডায়েরিতে কী লেখা ছিল? (What was written in the diary?)",
+    options:["আমি মারা গিয়েছি.. (I am dead..)","সে ফিরে আসেনি.. (He didn't return...)","আমি মারা যাইনি (I am not dead)"],
+    correct:2
+  },
+  {
+    quiz:true,
+    question:"লোকটি হঠাৎ কী দেখতে পেল? (What did the man suddenly see?)",
+    options:["একটি মেয়ের ছায়া (A girl's shadow)","একটি পর্দা (A curtain)","একটি জুতা (A shoe)"],
+    correct:0
+  },
+  {
+    img:"https://i.supaimg.com/7326c1b1-c5f6-472b-b47e-098fa8b88887.jpg",
+    text:"লোকটি একটু এগিয়ে দেখতে পেল....একটি মেয়ের ছবি...লোকটির মনে হলো সে মেয়েটিকে চিনে.... (Stepping forward, the man saw a picture of a girl... He felt like he knew her....)"
+  },
+  {
+    quiz: true,
+    question:"লোকটি ছবিতে কী দেখতে পেল? (What did the man see in the picture?)",
+    options:["কিছু না (Nothing)","একটি মেয়ে (A girl)","একটি বয়স্ক লোক (An old man)","একটি বিড়াল (A cat)"],
+    correct:1
+  },
+  ];
+
+  let current = 0;
+
+  const startScreen = document.getElementById("startScreen");
+  const gameScreen = document.getElementById("gameScreen");
+  const endingScreen = document.getElementById("endingScreen");
+
+  const sceneImage = document.getElementById("sceneImage");
+  const sceneText = document.getElementById("sceneText");
+  const quizBox = document.getElementById("quizBox");
+  const nextBtn = document.getElementById("nextBtn");
+
+  function startGame() {
+  const music = document.getElementById("bgMusic");
+  music.volume = 0.4; // ভলিউম (0.1 – 1)
+  music.play();
+
+  startScreen.style.display = "none";
+  gameScreen.style.display = "flex";
+  loadScene();
+}
+
+  function loadScene() {
+    quizBox.style.display = "none";
+    quizBox.innerHTML = "";
+    nextBtn.style.display = "block";
+
+    const scene = scenes[current];
+
+    if (scene.quiz) {
+      sceneImage.style.display = "none";
+      sceneText.innerText = scene.question;
+      quizBox.style.display = "block";
+
+      scene.options.forEach((opt, i) => {
+        const btn = document.createElement("button");
+        btn.className = "option";
+        btn.innerText = opt;
+        btn.onclick = () => {
+          if (i === scene.correct) {
+  showQuizMessage("Correct answer!(সঠিক উত্তর!)", true);
+} else {
+  showQuizMessage("Wrong answer, try again (ভুল উত্তর, আবার চেষ্টা করুন)", false);
+}
+        };
+        quizBox.appendChild(btn);
+      });
+
+      nextBtn.style.display = "none";
+    } else {
+      sceneImage.style.display = "block";
+      sceneImage.src = scene.img;
+      sceneText.innerText = scene.text;
+    }
+  }
+  function showQuizMessage(text, isCorrect) {
+  const box = document.getElementById("quizMessage");
+  box.innerText = text;
+  box.style.display = "block";
+
+  setTimeout(() => {
+    box.style.display = "none";
+    if (isCorrect) {
+      nextScene();
+    }
+  }, 1500);
+}
+
+  function nextScene() {
+    current++;
+    localStorage.setItem("gameScene", current);
+    if (current < scenes.length) {
+      loadScene();
+    } else {
+      localStorage.removeItem("gameScene");
+      gameScreen.style.display = "none";
+      endingScreen.style.display = "flex";
+      document.getElementById("endingTitle").innerText = "Ending One";
+      document.getElementById("endingText").innerText =
+        "মেয়েটি আসলে কে ? (Who is the girl?)";
+    }
+      if (current >= scenes.length) {
+  document.getElementById("bgMusic").pause();
+}
+  }
+
+  nextBtn.onclick = nextScene;
+  
+  const menuBtn = document.getElementById("menuBtn");
+  const menuBox = document.getElementById("menuBox");
+
+  menuBtn.onclick = () => {
+    menuBox.style.display =
+      menuBox.style.display === "block" ? "none" : "block";
+  };
+
+  function openAbout() {
+    window.location.href = "about.html";
+  }
+
+  function openPrivacy() {
+    window.location.href = "privacy.html";
+  }
+
+  // বাইরে ক্লিক করলে মেনু বন্ধ
+  document.addEventListener("click", (e) => {
+    if (!menuBtn.contains(e.target) && !menuBox.contains(e.target)) {
+      menuBox.style.display = "none";
+    }   
+  });
+  window.onload = function () {
+  const savedScene = localStorage.getItem("gameScene");
+  if (savedScene !== null) {
+    current = parseInt(savedScene);
+  }
+  showScene();
+};
+  function resizeGame() {
+  const container = document.getElementById("gameContainer");
+  const scaleX = window.innerWidth / 800;
+  const scaleY = window.innerHeight / 450;
+  const scale = Math.min(scaleX, scaleY);
+
+  container.style.transform = `scale(${scale})`;
+  container.style.transformOrigin = "top left";
+}
+window.addEventListener("resize", resizeGame);
+window.addEventListener("load", resizeGame);
+</script>
+<div id="quizMessage" class="quiz-message"></div>
+</body>
+    </html>       
